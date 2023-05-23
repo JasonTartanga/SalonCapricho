@@ -1,9 +1,15 @@
 package vista;
 
+import clases.Cliente;
 import java.awt.Color;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.util.List;
+import javax.swing.ImageIcon;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
+import modelo.DAO;
 
 /**
  *
@@ -13,12 +19,19 @@ public class VMain extends javax.swing.JFrame {
 
     private int posX, posY;
 
+    private DAO dao;
+    private Cliente cli;
+
     /**
      * Creates new form VMain
      */
-    public VMain() {
+    public VMain(DAO dao) {
+        this.dao = dao;
+
         initComponents();
         setBackground(new Color(0, 0, 0, 0));
+
+        cargarTabla();
 
         barraTareas.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
@@ -55,6 +68,7 @@ public class VMain extends javax.swing.JFrame {
         btnEliminar = new recursos.LookVentana.Button();
         jLabel1 = new javax.swing.JLabel();
         pnlIzquierda = new recursos.LookVentana.RoundPanel();
+        pCliente = new vista.PCliente(this, dao);
         jScrollPane1 = new javax.swing.JScrollPane();
         tablaUsuarios = new javax.swing.JTable();
 
@@ -172,11 +186,17 @@ public class VMain extends javax.swing.JFrame {
         pnlIzquierda.setLayout(pnlIzquierdaLayout);
         pnlIzquierdaLayout.setHorizontalGroup(
             pnlIzquierdaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 333, Short.MAX_VALUE)
+            .addGroup(pnlIzquierdaLayout.createSequentialGroup()
+                .addGap(30, 30, 30)
+                .addComponent(pCliente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(30, Short.MAX_VALUE))
         );
         pnlIzquierdaLayout.setVerticalGroup(
             pnlIzquierdaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 765, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlIzquierdaLayout.createSequentialGroup()
+                .addContainerGap(30, Short.MAX_VALUE)
+                .addComponent(pCliente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(30, 30, 30))
         );
 
         tablaUsuarios.setModel(new javax.swing.table.DefaultTableModel(
@@ -190,16 +210,14 @@ public class VMain extends javax.swing.JFrame {
             Class[] types = new Class [] {
                 java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class
             };
-            boolean[] canEdit = new boolean [] {
-                false, true, true, true
-            };
 
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
             }
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
+        });
+        tablaUsuarios.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tablaUsuariosMouseClicked(evt);
             }
         });
         jScrollPane1.setViewportView(tablaUsuarios);
@@ -208,7 +226,7 @@ public class VMain extends javax.swing.JFrame {
         fondo.setLayout(fondoLayout);
         fondoLayout.setHorizontalGroup(
             fondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(barraTareas, javax.swing.GroupLayout.DEFAULT_SIZE, 1400, Short.MAX_VALUE)
+            .addComponent(barraTareas, javax.swing.GroupLayout.DEFAULT_SIZE, 1409, Short.MAX_VALUE)
             .addGroup(fondoLayout.createSequentialGroup()
                 .addGap(15, 15, 15)
                 .addGroup(fondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -235,7 +253,7 @@ public class VMain extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(fondo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(fondo, javax.swing.GroupLayout.DEFAULT_SIZE, 1409, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -251,21 +269,26 @@ public class VMain extends javax.swing.JFrame {
     }//GEN-LAST:event_bntCerrarActionPerformed
 
     private void btnAniadirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAniadirActionPerformed
-        Clientas clientas = new Clientas(this, true);
-        clientas.setVisible(true);
+        pCliente.registrar(cli);
     }//GEN-LAST:event_btnAniadirActionPerformed
 
     private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
-        // TODO add your handling code here:
+        pCliente.modificar(cli);
     }//GEN-LAST:event_btnEditarActionPerformed
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
-        // TODO add your handling code here:
+
     }//GEN-LAST:event_btnBuscarActionPerformed
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
-        // TODO add your handling code here:
+        pCliente.eliminar(cli);
     }//GEN-LAST:event_btnEliminarActionPerformed
+
+    private void tablaUsuariosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaUsuariosMouseClicked
+        int row = tablaUsuarios.getSelectedRow();
+        cli = dao.buscarCliente(tablaUsuarios.getValueAt(row, 0).toString());
+        pCliente.cargarPanel(cli);
+    }//GEN-LAST:event_tablaUsuariosMouseClicked
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private recursos.LookVentana.RoundPanel barraTareas;
@@ -277,8 +300,27 @@ public class VMain extends javax.swing.JFrame {
     private recursos.LookVentana.RoundPanel fondo;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
+    private vista.PCliente pCliente;
     private recursos.LookVentana.RoundPanel pnlArriba;
     private recursos.LookVentana.RoundPanel pnlIzquierda;
     private javax.swing.JTable tablaUsuarios;
     // End of variables declaration//GEN-END:variables
+
+    public void cargarTabla() {
+        List<Cliente> clientes = dao.listarClientes();
+        DefaultTableModel modelo = (DefaultTableModel) tablaUsuarios.getModel();
+        modelo.setRowCount(0);
+
+        for (int i = 0; i < clientes.size(); i++) {
+            Object[] fila = new Object[4];
+            fila[0] = clientes.get(i).getId_cliente();
+            fila[1] = clientes.get(i).getNombre();
+            fila[2] = clientes.get(i).getApellido();
+            fila[3] = clientes.get(i).getTelefono();
+
+            modelo.addRow(fila);
+
+        }
+
+    }
 }
