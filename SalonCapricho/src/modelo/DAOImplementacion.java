@@ -35,9 +35,12 @@ public class DAOImplementacion implements DAO {
     final private String LISTAR_CLIENTES = "SELECT * FROM cliente";
 
     final private String BUSCAR_CLIENTES = "SELECT * FROM cliente WHERE id_cliente = ?";
+    
+    final private String LISTAR_CLIENTES_X_BUSCADOR = "SELECT * FROM cliente WHERE nombre like = ? or apellido = ?";
 
     //*************** UPDATE ***************/
     final private String MODIFICAR_CLIENTES = "UPDATE cliente SET nombre = ?, apellido = ?, telefono = ? WHERE id_cliente = ?";
+    
     //*************** DELETE ***************/
     final private String ELIMINAR_CLIENTES = "DELETE FROM cliente WHERE id_cliente = ?";
 
@@ -220,4 +223,27 @@ public class DAOImplementacion implements DAO {
         return id;
     }
 
+    @Override
+    public List<Cliente> listarClientesXBuscador(String nombre) {
+        List<Cliente> clientes = new ArrayList<>();
+        this.abrirConexion();
+        
+        try {
+            stmt = con.prepareStatement(LISTAR_CLIENTE_X_BUSCADOR);
+            stmt.setString(1, "%" + nombre + "%");
+            stmt.setString(2, "%" + nombre + "%");
+            ResultSet rs = stmt.executeQuery();
+            
+            while (rs.next()) {
+             Cliente cli = new Cliente();
+             cli = this.recuperarUsuario(rs);
+             clientes.add(cli);                
+            }
+            
+        } catch (SQLException e) {
+            e.printStrackTrace();   
+        }
+        this.cerrarConexion();
+        return clientes;
+    }
 }
