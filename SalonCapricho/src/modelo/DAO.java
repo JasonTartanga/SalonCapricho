@@ -20,6 +20,8 @@ public interface DAO {
     public List<Cliente> listarClientes();
 
     public Cliente buscarCliente(String id_cliente);
+    
+    public List<Cliente> listarClientesXBuscador(String nombre);
 
     public String generarIdCliente();
 
